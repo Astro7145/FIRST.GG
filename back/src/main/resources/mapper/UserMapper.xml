@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.camp.mul.back.dao.UserDao">
+
+    <select id="getUserById" resultType="com.camp.mul.back.dto.UserDto">
+        SELECT * FROM user WHERE id=#{id};
+    </select>
+
+    <select id="getUserBySeq" resultType="com.camp.mul.back.dto.UserDto">
+        SELECT * FROM user WHERE seq=#{seq};
+    </select>
+
+    <insert id="addUser">
+        INSERT INTO user(id, pw, username, email)
+        VALUES (#{id}, #{pw}, #{username}, #{email});
+    </insert>
+
+    <update id="changeUserInfo" parameterType="com.camp.mul.back.dto.UserDto">
+        UPDATE user
+        SET pw=#{pw}, username=#{username}, email=#{email}, intro=#{intro}, auth=#{auth}
+        WHERE seq=#{seq}
+    </update>
+
+    <delete id="deleteUserBySeq">
+        DELETE FROM user
+        WHERE seq=#{seq}
+    </delete>
+
+    <select id="getAllUser" resultType="com.camp.mul.back.dto.UserDto">
+        SELECT * FROM user;
+    </select>
+
+    <select id="getUserListByAuth" resultType="com.camp.mul.back.dto.UserDto">
+        SELECT * FROM user WHERE auth=#{auth};
+    </select>
+
+</mapper>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="/resources/js/script.js"></script>
+  <link rel="stylesheet" type="text/css" href="../../resources/css/style.css">
+  <link rel="stylesheet" type="text/css" href="../../resources/css/summoner.css">
+  <script type="text/javascript" src="../../resources/js/script.js"></script>
+  <script type="text/javascript" src="../../resources/js/properties/champion.js"></script>
+  <script type="text/javascript" src="../../resources/js/properties/perk.js"></script>
+  <script type="text/javascript" src="../../resources/js/properties/spell.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $("headers").load("../common/header.html");
+      $("navs").load("../common/nav.html");
+
+      const url = new URL(location.href);
+
+      const urlParams = url.searchParams;
+
+      const uname = urlParams.get('name').replace(/ /g, "")
+
+      let totalWin = 0;
+      let totalLose = 0;
+
+      $.ajax({
+        url: mainServer + "/summonerInfo",
+        type: "GET",
+        data: { name: uname },
+        success: function (summoner) {
+          $("#summoner-level").text(summoner.summonerLevel)
+        },
+        error: function () {
+          alert("getSummoner Error")
+        }
+      })
+
+      $.ajax({
+        url: mainServer + "/champMasteryList",
+        type: "GET",
+        data: { name: uname },
+        success: function (champList) {
+
+          $("#champ-mastery").removeClass("background-img")
+
+          $.each(champList, function (i, champ) {
+            var str = "";
+
+            str += '<div class="champ-mastery-fragment">'
+            str += '<img src="http://ddragon.leagueoflegends.com/cdn/12.5.1/img/champion/' + champEn[champ.championId] + '.png" class="champ-mastery-fragment-img">'
+            str += '<div class="champ-mastery-fragment-div1">'
+            str += '<div class="champ-mastery-fragment-div2">'
+            str += '<b id="summoner-mastery-champName">' + champKo[champ.championId] + '</b> <sub>' + champ.championLevel + '레벨</sub>'
+            str += '</div>'
+            str += '<div class="champ-mastery-fragment-div3">'
+            str += '승률 <span class="champ-mastery-fragment-span1">0.0%</span><sub>(0게임)</sub>'
+            str += '</div>'
+            str += '<div class="champ-mastery-fragment-div4">'
+            str += 'KDA <span class="champ-mastery-fragment-span2">0 / 0 / 0</span> '
+            str += '</div>'
+            str += '</div>'
+            str += '</div>'
+
+            $("#champ-mastery").append(str)
+          })
+        },
+        error: function () {
+          alert("getMastery Error")
+        }
+      })
+
+      $.ajax({
+        url: mainServer + "/leagueList",
+        type: "GET",
+        data: { name: uname },
+        success: function (list) {
+
+          $("#matches").removeClass("background-img")
+          $("#recent-league").removeClass("background-img")
+          
+          $.each(list, function (i, league) {
+            var str = ""
+
+            if (league.info.gameType == "MATCHED_GAME") //  || league.info.gameType == "CUSTOM_GAME"
+            {
+              for (var i = 0; i < league.info.participants.length; i++) {
+                if ((league.info.participants[i].summonerName).toLowerCase().replace(/ /g, "") == uname) {
+                  if (league.info.participants[i].win) {
+                    str += '<div id="aMatch" class="one-game-module win">'
+                    totalWin++;
+                  }
+                  else {
+                    str += '<div id="aMatch" class="one-game-module lose">'
+                    totalLose++;
+                  }
+                  str += '<div class="one-game-fragment" style="display: flex; flex-direction: column; width: 10%;">'
+                  str += '<div><b>' + (league.info.participants[i].win ? "승리" : "패배") + '</b></div>'
+                  str += '<div><i>' + league.info.gameMode + '</i></div>'
+                  str += '<div><sub>' + Math.floor(league.info.gameDuration / 60) + '분</sub></div>'
+                  str += '</div>'
+                  str += '<div class="one-game-fragment">'
+                  str += '<img src="http://ddragon.leagueoflegends.com/cdn/12.5.1/img/champion/' + champEn[league.info.participants[i].championId] + '.png" class="one-game-img">'
+                  str += '</div>'
+                  str += '<div class="one-game-fragment">'
+                  str += '<div>'
+                  str += '<div class="one-game-perk">'
+                  str += '<img src="http://ddragon.leagueoflegends.com/cdn/12.6.1/img/spell/' + spellPath[league.info.participants[i].summoner1Id] + '.png" class="perk-img-size">' // 스펠1
+                  str += '</div>'
+                  str += '<div class="one-game-perk">'
+                  str += '<img src="http://ddragon.leagueoflegends.com/cdn/12.6.1/img/spell/' + spellPath[league.info.participants[i].summoner2Id] + '.png" class="perk-img-size">' // 스펠2
+                  str += '</div></div>'
+                  str += '<div>'
+                  str += '<div class="one-game-perk">'
+                  str += '<img src="https://ddragon.canisback.com/img/' + perkPath[league.info.participants[i].perks.styles[0].selections[0].perk] + '" class="perk-img-size perk-primary">' // 룬1
+                  str += '</div>'
+                  str += '<div class="one-game-perk">'
+                  str += '<img src="https://ddragon.canisback.com/img/' + perkPath[league.info.participants[i].perks.styles[1].style] + '" class="perk-img-size">' // 룬2
+                  str += '</div></div></div>'
+                  str += '<div class="one-game-fragment" style="text-align: center;">'
+                  str += '<div><div>'
+                  str += '<b style="font-size: 0.8em">' + league.info.participants[i].kills + ' / ' + league.info.participants[i].deaths + ' / ' + league.info.participants[i].assists + '</b>'
+                  str += '</div>'
+                  str += '<div>'
+                  str += '<small style="font-size: 0.8em;">' + ((league.info.participants[i].kills + league.info.participants[i].assists) / league.info.participants[i].deaths).toFixed(2) + ':1 평점</small>'
+                  str += '</div>'
+                  str += '<div>'
+                  str += '<small>CS ' + (league.info.participants[i].totalMinionsKilled / (league.info.gameDuration / 60)).toFixed(1) + ' (' + league.info.participants[i].totalMinionsKilled + ')</small>'
+                  str += '</div></div></div>'
+                }
+              }
+
+              $("#summoner-winrate").text(Math.floor((totalWin / (totalWin + totalLose)) * 100) + "%")
+              $("#summoner-winrate-a").text((totalWin / totalLose).toFixed(2))
+              $("#summoner-win-a").text(totalWin)
+              $("#summoner-lose-a").text(totalLose)
+
+              str += '<div class="one-game-fragment team-center-between">'
+              str += '<div>'
+              str += '<ul class="one-game-ul">'
+
+              for (var i = 0; i < league.info.participants.length / 2; i++) {
+                str += '<li class="team-summoner"><img src="http://ddragon.leagueoflegends.com/cdn/12.5.1/img/champion/' + champEn[league.info.participants[i].championId] + '.png" class="team-summoner-icon">' + league.info.participants[i].summonerName + ' </li>'
+              }
+
+              str += '</ul></div>'
+              str += '<div><ul class="one-game-ul one-game-ul-align-right">'
+
+              for (var i = league.info.participants.length / 2; i < league.info.participants.length; i++) {
+                str += '<li class="team-summoner"> ' + league.info.participants[i].summonerName + '<img src="http://ddragon.leagueoflegends.com/cdn/12.5.1/img/champion/' + champEn[league.info.participants[i].championId] + '.png" class="team-summoner-icon"></li>'
+              }
+
+              str += '</ul></div></div></div>'
+
+              $("#matches").append(str)
+            }
+          })
+        },
+        error: function (err) {
+          alert('leagueList error')
+        }
+      })
+
+      $.ajax({
+        url: mainServer + "/playerLeague",
+        type: "GET",
+        data: { name: uname },
+        success: function (summoner) {
+          $("#summoner-name").text(summoner[0].summonerName)
+          $("#summoner-win").text(summoner[0].wins)
+          $("#summoner-lose").text(summoner[0].losses)
+          $("#summoner-winrate-rank").text(Math.floor((summoner[0].wins / (summoner[0].wins + summoner[0].losses)) * 100) + "%")
+          $("#summoner-lp").text(summoner[0].leaguePoints)
+          $("#summoner-tier-img").attr("src", "/resources/img/tier/Emblem_" + summoner[0].tier + ".png")
+        },
+        error: function (err) {
+          alert("playerLeague Error")
+        }
+      })
+    });
+  </script>
+</head>
+
+<body>
+  <headers></headers>
+  <navs></navs>
+  <div>
+    <div style="margin:0 20%;">
+      <div>
+        <div style="
+                height: 20em; 
+                background-size: cover;
+                position: relative;">
+          <span style="font-size: 2em;
+                            position: absolute;
+                            top: 30%;
+                            left: 20%;
+                            transform: translate(-50%, -50%);
+                            border-radius: 1.1em;">
+            <h1 align="center" id="summoner-name"></h1>
+          </span>
+          <div style="background-color: #e0e0e0; 
+                            border-radius: 1em; 
+                            position: absolute;
+                            display: inline-block;
+                            top: 50%;
+                            left: 80%;
+                            transform: translate(-50%, -50%);">
+            <img id="summoner-tier-img" src="" style="height: 13em; 
+                        width: 13em;
+                        margin: 0.5em;">
+
+            <h4 align="center">
+              <b>랭크</b> W: <b id="summoner-win"></b> L: <b id="summoner-lose"></b> WR: <b
+                id="summoner-winrate-rank"></b> LP: <b id="summoner-lp"></b>
+            </h4>
+          </div>
+        </div>
+        <div style="background-color: rgba(224, 224, 224, 1); 
+                        height: 1000px;">
+          <div style="display: flex;">
+            <fieldset id="matches" class="div-module background-img" 
+                      style="flex: 2;">
+              <legend class="module-legend">대전 기록</legend>
+
+              <!-- 대전 기록 -->
+
+            </fieldset>
+
+            <div style="flex: 1;
+                                display: flex;
+                                flex-direction: column;">
+              <div>
+                <fieldset id="recent-league" class="div-module background-img">
+                  <legend class="module-legend">최근 전적</legend>
+                  <div style="display: flex;
+                                            justify-content: center;">
+                    <span>
+                      <b id="summoner-winrate" style="font-size: 3em"></b>
+                    </span>
+                  </div>
+                  <div style="text-align: center;">
+                    승: <b id="summoner-win-a"></b> 패: <b id="summoner-lose-a"></b> 평점: <b id="summoner-winrate-a"></b>
+                  </div>
+                  <div style="text-align: center; margin-top: 1em;">
+                    <b id="summoner-level"></b> Lv.
+                  </div>
+                </fieldset>
+              </div>
+
+              <!-- 챔피언 마스터리 -->
+              <div>
+                <fieldset id="champ-mastery" class="div-module background-img" style="display: flex;
+                                        flex-direction: column;">
+                  <legend class="module-legend">
+                    숙련도
+                  </legend>
+                </fieldset>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
+
+<!-- --disable-web-security --user-data-dir=%LOCALAPPDATA%\Google\chromeTemp -–allow-file-access-from-files -->

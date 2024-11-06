@@ -1,0 +1,21 @@
+DROP DATABASE IF EXISTS FinalDB;
+
+CREATE DATABASE FinalDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
+use FinalDB;
+
+CREATE TABLE `user` (
+	`seq` INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`id` VARCHAR(20) NOT NULL UNIQUE KEY,
+	`pw` VARCHAR(20) NOT NULL,
+	`username` VARCHAR(20) NOT NULL,
+	`email` VARCHAR(50) NOT NULL,
+	`intro` VARCHAR(500) NULL DEFAULT '자기소개를 작성해 주세요!',
+	`profile` VARCHAR(256) DEFAULT NULL,
+	`auth` INT(1) NOT NULL DEFAULT 3
+) ENGINE=InnoDB
+;
+
+
+INSERT INTO `user`(`id`, `pw`, `username`, `email`, `auth`)
+VALUES('admin', 'admin', 'admin', 'admin', 1);

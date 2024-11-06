@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head id="headers">
+    <meta charset="UTF-8" >
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>  
+    <script src="/resources/js/script.js"></script>
+    <link rel="stylesheet" type="text/css" href="/resources/css/style.css">
+    <link rel="stylesheet" type="text/css" href="../../resources/css/style-bbs.css">
+ 
+    <script type="text/javascript" src="./jquery.twbsPagination.min.js"></script>
+    </script>
+    <script type="text/javascript">   
+        $(document).ready( function() {
+            $("headers").load("/screens/common/header.html"); 
+            $("navs").load("/screens/common/nav.html"); 
+        });
+    </script>
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+        #container{
+            display: flex;
+            height: 80vh;
+            width: max-content;
+            margin: 0 auto;
+            align-items: center;
+        }
+        #nav {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 570px;
+            width: 250px;
+            padding: 40px;
+            background-color: #FFFFFF;
+            margin-top: 50px;
+        }
+
+        #nav > div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #nav > .profile > * {
+            margin: 5px 0;
+            font-size: 15px;
+        }
+
+        #nav > .menus {
+            margin: 20px;
+        }
+
+        #nav > .menus > * {
+            margin: 15px 0;
+        }
+        
+        #nav a {
+            color: gray;
+            font-size: 15px;
+            text-decoration: none;
+        }
+
+        #nav a.selected {
+            color: #153769;
+            font-size: 25px;
+        }
+
+        .profile {
+            border-bottom: 1px solid #153769;
+        }
+
+        .profile_image_wrapper {
+            position: relative;
+        }
+
+        .profile_image_wrapper > button {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            border: none;
+            background-image: url("kim.png");
+            background-size: contain;
+            height: 25px;
+            width: 25px;
+            cursor: pointer;
+        }
+
+        .pagination { list-style: none; text-align: center; }    
+        .pagination li { margin: 3px; display: inline-block; text-decoration: none; line-height: 1.5; color: #96a0ad; padding-bottom: 10px;}
+
+        .pagination .prev a { width: 40px; }
+        .pagination .next a { width: 40px; }
+
+    </style>
+    <title>작성한 게시글</title>
+</head>
+<body>
+    <div>
+        <headers></headers>
+        <navs></navs>
+        <div id="container">
+            <div id="nav">
+                <div class="profile_image_wrapper">
+                    <img src="kim.png" alt="Image">
+                </div>
+                <div class="profile">
+                    <div class="read-username"></div>
+                    <div class="read-email"></div>
+                    <div class="read-intro" style="margin-bottom: 30px;"></div>
+                </div>
+                <div class="menus">
+                    <a href="/screens/auth/update.html">정보수정</a>
+                    <a class="selected" href="/screens/auth/mybbs.html">작성한 글</a>
+                    <a href="/screens/auth/mycomment.html">작성한 댓글</a>
+                    <a href="/screens/auth/delete.html">회원 탈퇴</a>
+                </div>
+            </div>
+            <div class="content1" style="width: 700px; height: 570px; margin-left: 50px; margin-top: 100px; padding-top: 10px; padding-bottom: 0;">
+                <div id="content">
+                    <h2>내가 작성한 글</h2>
+                    <table>
+                        <tbody>
+                            <tr class="search_box">
+                                <td>
+                                    <select id="sort" name="sort" onchange="getBbslist(1)" class="list">
+                                        <option value="new" selected>최신순</option>
+                                        <option value="old">오래된순</option>
+                                        <option value="like">추천순</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="_choice" name="choice">
+                                        <option selected>선택</option>
+                                        <option value="title">제목</option>
+                                        <option value="content">내용</option>
+                                        <option value="writer">작성자</option>
+                                    </select>
+                                </td>
+                                <td><input	type="text"  id="_search" name="search"placeholder="검색어"></td>
+                                <td><span><button type="button" id="btnSearch">검색</button></span></td>
+                            </tr>
+                        </tbody>
+                    </table>	
+    
+                    <!--정렬-->
+                    <div  id="app">
+                    </div>
+                </div>
+                <br>
+                <!-- 글목록 -->
+                <div>
+                
+                    <table class="in_content" style="width:650px; height: 320px; margin: 0;">
+                        <thead>
+                            <tr>
+                                <th scope="col">번호</th>
+                                <th scope="col">제목</th>
+                                <th scope="col">작성자</th>
+                                <th scope="col">작성일</th>
+                               <!--  <th scope="col">조회수</th> -->
+                                <th scope="col">추천순</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin: auto;">
+                    <!-- <button type="button" id="writeBtn" onclick="window.location.href= 'Bbswrite.html' " class="btn_update">글쓰기</button>
+                    <br> -->
+                    <!-- 페이징기능-->
+                    <ul id="pagination" class="pagination"></ul>
+                </div>
+
+            </div>
+            <!--  <div>
+                    <ul id="pagination" class="pagination"></ul>
+                </div>  -->
+            </div>
+        </div>
+    <script type="text/javascript">
+
+        // 회원정보 받아오기
+        
+        const data = {
+            token: sessionStorage.getItem('token'),
+            id: sessionStorage.getItem('login')
+        }
+
+        $.ajax({
+            type: 'post',
+            url: mainServer + '/userInfo',
+            data: data,
+            success: (res) => {
+                console.log(res)
+                //alert(JSON.stringify(res))
+                const data = JSON.parse(res);
+                const user = JSON.parse(data.data)
+                
+                $('.read-id').val(user.id)
+                $('.read-username').text(user.username)
+                $('.read-email').text(user.email)
+                $('.read-intro').text(user.intro)
+            },
+            error: err => {
+                    console.log(`error: ${err.status}`)
+            }
+        })
+
+        $(document).ready(function () {
+        let str = sessionStorage.getItem("login");	
+
+        getBbslist(1)
+        loadPage()
+    })
+		
+    $("#btnSearch").click(function () {
+        getBbslist(1);
+        loadPage();		
+    });
+
+    function getBbslist( page ) {
+	    let choice = $("#_choice").val();
+    	let keyword = $("#_search").val();
+        let sort = $("#sort").val();
+
+        //alert(sort)
+	
+        // alert(page + " / " + choice + " / " + search)
+
+    	$("#tbody").html(""); // 테이블 초기화
+	    $.ajax({
+		    url:mainServer + "/myPosts",
+    		type:"get",
+	    	data: data,
+		    success:function(list){
+                const data = JSON.parse(list)
+                const dataList = JSON.parse(data.data)
+			    $.each(dataList, function (i, item) {
+				
+				    let str = "<tr>"
+					    		+ "<th>" + (i + 1) + "</th>";
+	    				str +=	  `<td class='table-title' onclick='location.href="/screens/bbs/bbsdetail.html?seq=${item.seq}" '> ${item.title} </td>`
+                        str +=	  "<td>" + item.writer + "</td>"
+                                + "<td>" + item.created + "</td>"
+                              //  + "<td>" + item.readcount + "</td>" 
+                                + "<td>" + item.likes + "</td>" 
+                                + "</tr>";	
+				$("#tbody").append(str);
+			});
+		},
+		error:function(){
+			alert('error 1111111111111');	
+		}			
+	});
+    }
+
+    function loadPage() { // 글의 총수		
+
+        var totalCount = 13;
+
+	    let choice = $("#_choice").val();
+    	let search = $("#_search").val();
+	
+	    $.ajax({
+		    url:mainServer + "/getPostCount",
+    		type:"get",
+		    success:function(count){
+                totalCount = parseInt(count)
+		    },
+		    error:function(){
+			    alert('getBbsCount error');
+		    }		
+	    });	 
+        
+	    let pageSize = 10;		
+	
+    	let _totalPages = totalCount / 10
+	    if(totalCount % 10 > 0){
+		    _totalPages++;
+	    }
+	
+	    $('#pagination').twbsPagination('destroy');	// 페이지 갱신
+	
+        // alert(totalCount)
+
+    	$('#pagination').twbsPagination({		
+	        totalPages: _totalPages,
+	        visiblePages: 10,
+	        first:'<span sris-hidden="true"> « </span>',
+    	    last:'<span sris-hidden="true"> » </span>',
+	        prev:"이전",
+	        next:"다음",
+	        initiateStartPageClick:false,	// onPageClick 자동호출 방지
+	        onPageClick: function (event, page) {
+	            //alert(page + " ?????????????????");
+	            getBbslist( page );
+	        }
+	    })
+    }
+        // 게시판
+        /*
+        $(document).ready(function () {
+            getBbsList(1);  // 첫번째 페이지를 가져와라
+            getBbsCount();  
+            // getTest(1);
+
+            $("#btnSearch").click(function () {
+                getBbsList(0);
+                getBbsCount();
+            });
+
+            $("#_search").keyup(function(keyNum) {
+                if(keyNum.keyCode == 13) {
+                    getBbsList(0);
+                    getBbsCount();
+                }
+            })
+        });  
+
+        function getBbsList( page ) {
+            let choice = $("#_choice").val();
+            let search = $("#_search").val();
+            
+            $("#tbody").html("");   // 테이블 초기화
+
+            $.ajax({
+                url:mainServer + "/loadPosts",
+                type:"get",
+                data:{ 
+                    "sort":"new", 
+                    "keyword": "test",
+                    "page": page
+                },
+                success:function(list){
+                    //alert(JSON.stringify(list))
+                    $.each(list, function (i, item) {
+
+                        let str = "<tr>"
+                                    + "<th>" + (i + 1) + "</th>";
+                            
+                        if(item.deleted == 0){
+                            str +=	  "<td>&nbsp;&nbsp;<a href='bbsdetail.html?seq=" + item.seq + "'>" + item.title + "</a></td>"	
+                            str +=	  "<td>" + item.writer + "</td>"
+                                    + "<td>" + item.created + "</td>"
+                                    + "<td>" + item.readcount + "</td>"
+                                    + "<td>" + item.like + "</td>"
+
+                                    + "</tr>";	
+                        }
+                        else{ 
+                            str +=	  "<td align='center'><font color='#ff0000'>- 이 글은 작성자에 의해서 삭제되었습니다 -</font></td>"
+                        }
+                            
+                    $("#tbody").append(str);
+                        });
+                    },
+                error:function(){
+                    alert('error 1111111111111');	
+                }			
+            });
+        }
+
+       /* function getTest(page)
+        {
+            $.ajax({
+		        url:mainServer + "/loadPosts",
+                type: "get",
+                data:
+                {
+                    sort: "new", 
+                    keyword: "test", 
+                    page: 1
+                },
+                success: function(msg)
+                {
+                    alert(JSON.stringify(msg))
+                },
+                error: function(err)
+                {
+                    alert(err)
+                }
+            })
+        } */
+
+        //글의 총수를 취득
+        /*
+        function getBbsCount() {
+            let choice = $("#_choice").val();
+            let search = $("#_search").val();
+
+            $.ajax({
+                url:mainServer + "/getPostCount",
+                type:"post",
+                data: {
+                    "sort": "new",
+                    "keyword": "test",
+                    "page": 1
+                },
+                success:function(count) {
+                    //alert(JSON.stringify(count))
+                    loadPage(count);
+                },
+                error:function() {
+                    alert('getBbsCount error');
+                }
+            });
+        }
+        
+        //페이지 넘기기
+            function loadPage(totalCount) { // 글의 총 수
+                //alert(JSON.stringify(totalCount))
+                let pageSize = 10;      // 페이지당 게시글 갯수
+                //let pageNumber = 1;	// 현재 페이지
+
+                // 페이지 마지막쪽에 10개 이하로 남았을때 페이지수가 하나 더 있어야한다. 만약 게시글이 23개면 페이지수는 3개가 필요하니까 3개로 맞춰주는 코드이다.
+                let _totalPages = totalCount / 10	// 10 10 3 
+                if(totalCount % 10 > 0) {
+                    _totalPages++;
+                }
+
+                $('#pagination').twbsPagination('destroy'); // 페이지 갱신
+
+                $('#pagination').twbsPagination({
+                    //startPage: 1,
+                    totalPages: _totalPages,    // 총 페이지 갯수
+                    visiblePages: 10,
+                    first:'<span sris-hidden="true">«</span>',
+                    last:'<span sris-hidden="true">»</span>',
+                    prev:"이전",
+                    next:"다음",
+                    initiateStartPageClick:false,   // 자동호출하지 않게 하는 것
+                    onPageClick: function (event, page) {
+                        //alert(page);
+                        getBbsList(page - 1);
+                    }
+                })
+            }
+        */
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.camp.mul.back.dao.PostDao">
+    <select id="loadPosts" parameterType="map" resultType="com.camp.mul.back.dto.PostDto">
+        SELECT SEQ, TITLE, WRITER, CONTENT, CREATED, READCOUNT, DELETED, LIKES
+        FROM (SELECT ROW_NUMBER()OVER(
+                    <choose>
+                        <when test='sort.equals("new")'>
+                            ORDER BY CREATED DESC
+                        </when>
+                        <when test='sort.equals("old")'>
+                            ORDER BY CREATED ASC
+                        </when>
+                        <when test='sort.equals("like")'>
+                            ORDER BY LIKES DESC
+                        </when>
+                    </choose>
+                    ) AS RNUM,
+                     p.*,
+                     (SELECT COUNT(*) FROM LIKES WHERE P_SEQ = p.seq AND (FLAG = 1 OR FLAG = TRUE)) AS LIKES
+                     FROM (SELECT * FROM POST 
+                     WHERE 1 = 1
+                     <if test="keyword != null and keyword != ''">
+                        AND TITLE LIKE CONCAT_WS('%', #{keyword}, '%') 
+                        OR CONTENT LIKE CONCAT_WS('%', #{keyword}, '%')
+                     </if>
+                     ) p) b
+        WHERE RNUM BETWEEN #{start} AND #{end}
+    </select>
+
+    <select id="loadPostsAll" parameterType="String" resultType="com.camp.mul.back.dto.PostDto">
+        SELECT SEQ, TITLE, WRITER, CONTENT, CREATED, READCOUNT, DELETED, LIKES
+        FROM (SELECT ROW_NUMBER()OVER(
+                    <choose>
+                        <when test='sort.equals("new")'>
+                            ORDER BY CREATED DESC
+                        </when>
+                        <when test='sort.equals("old")'>
+                            ORDER BY CREATED ASC
+                        </when>
+                        <when test='sort.equals("like")'>
+                            ORDER BY LIKES DESC
+                        </when>
+                    </choose>
+                    ) AS RNUM,
+                     p.*,
+                     (SELECT COUNT(*) FROM LIKES WHERE P_SEQ = p.seq AND (FLAG = 1 OR FLAG = TRUE)) AS LIKES
+                     FROM (SELECT * FROM POST) p) b
+    </select>
+
+    <select id="loadPost" parameterType="Integer" resultType="com.camp.mul.back.dto.PostDto">
+        SELECT SEQ, TITLE, WRITER, CONTENT, CREATED, READCOUNT, DELETED,
+        (SELECT COUNT(*) FROM LIKES WHERE P_SEQ = #{seq} AND (FLAG = 1 OR FLAG = TRUE)) AS LIKES
+        FROM POST
+        WHERE SEQ = #{seq}
+    </select>
+    
+    <update id="likePost" parameterType="Integer">
+        UPDATE POST
+        SET likes = likes + 1
+        WHERE seq = #{seq}
+    </update>
+
+    <insert id="writePost" parameterType="com.camp.mul.back.dto.PostDto">
+        INSERT INTO POST(TITLE, WRITER, CONTENT)
+        VALUES(#{title}, #{writer}, #{content})
+    </insert>
+
+    <update id="updatePost" parameterType="com.camp.mul.back.dto.PostDto">
+        UPDATE POST
+        SET TITLE = #{title}, CONTENT = #{content}
+        WHERE SEQ = #{seq}
+    </update>
+
+    <update id="deletePost" parameterType="Integer">
+        UPDATE POST
+        SET DELETED = 1
+        WHERE SEQ = #{seq}
+    </update>
+
+    <select id="isLiked" parameterType="map" resultType="Integer">
+        SELECT COUNT(*) FROM LIKES
+        WHERE P_SEQ = #{seq}
+        AND U_SEQ = (SELECT SEQ FROM user WHERE ID = #{id})
+    </select>
+
+    <select id="isLikedFlag" parameterType="map" resultType="Integer">
+        SELECT FLAG FROM LIKES
+        WHERE P_SEQ = #{seq}
+        AND U_SEQ = (SELECT SEQ FROM user WHERE ID = #{id})
+    </select>
+
+    <insert id="addLike" parameterType="map">
+        INSERT INTO LIKES(FLAG, U_SEQ, P_SEQ)
+        VALUES(1, (SELECT SEQ FROM user WHERE ID = #{id}), #{seq})
+    </insert>
+
+    <update id="updateLike" parameterType="map">
+        UPDATE LIKES
+        <if test="flag == true">
+            SET FLAG = 1
+        </if>
+        <if test="flag == false">
+            SET FLAG = 0
+        </if>
+        WHERE P_SEQ = #{seq}
+        AND U_SEQ = (SELECT SEQ FROM user WHERE ID = #{id})
+    </update>
+
+    <select id="getLikes" parameterType="Integer" resultType="Integer">
+        SELECT COUNT(*) FROM LIKES
+        WHERE P_SEQ = #{seq}
+        AND (FLAG = 1 OR FLAG = TRUE)
+    </select>
+
+    <select id="getPostCount" resultType="Integer">
+        SELECT COUNT(*) FROM POST
+    </select>
+
+    
+</mapper>

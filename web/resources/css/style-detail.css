@@ -1,0 +1,27 @@
+/* a:link, a:hover, a:visited
+{
+    text-decoration: none;
+    color: black;
+} */
+/* 좋아요 버튼 */
+.likeButtonOn
+{
+    padding: 0.2em 0.5em;
+    border: 2px solid #FFB400;
+    color: white;
+    border-radius: 0.5em;
+    background-color: #FFD732;
+    cursor: pointer;
+}
+.likeButtonOff
+{   
+    padding: 0.2em 0.5em;
+    border: 2px solid #FFB400;
+    color: #FFD732;
+    border-radius: 0.5em;
+    background-color: white;
+    cursor: pointer;
+}
+
+/* 테이블 td 자동 정렬*/
+td { text-align: right }

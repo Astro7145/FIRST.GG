@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="../../resources/css/style-bbs.css">
+  <script src="/resources/js/script.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="../../resources/css/style.css">
+  <link rel="stylesheet" type="text/css" href="../../resources/css/style-bbs.css">
+  <link rel="stylesheet" type="text/css" href="../../resources/css/style-detail.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+
+  <title>First.GG_Bbsdetail</title>
+</head>
+
+<body>
+  <headers></headers>
+  <navs></navs>
+  <div>
+
+    <body>
+      <div id="app" class="in_content1">
+        <table>
+          <col width="150">
+          <col width="500">
+          <tr>
+            <td id="title" class="title"></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td id="id" class="id"></td>
+            <td></td>
+          </tr>
+          <tr>
+            <span>
+              <td id="wdate" class="date"></td>
+            </span>
+            <td></td>
+          </tr>
+          <tr>
+            <td>
+              <span class="likeButton" id="like">
+                <b id="likes"></b>
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <pre id="content" class="blah"></pre>
+            </td>
+          </tr>
+
+        </table>
+        <div class="btn_align" style="margin: 10px;">
+          <button type="button" id="bbsupdate" class="btn">수정</button>
+          <button type="button" id="bbsdelete" class="btn">삭제</button>
+          <button type="button" id="bbscancle" onclick="window.location.href='bbslist.html' " class="btn">취소</button>
+        </div>
+      </div>
+      <div class="in_content2">
+        <!--댓글 작성-->
+        <div class="repl_w">
+          <b style="font-size: 20px;">댓글</b>
+          <hr>
+          <div id="commentDiv" class="commetDiv"></div>
+
+          <br>
+          <div style="display: flex;">
+            <div>
+              <textarea rows="8" cols="95" id="commentContent" style="margin-top: 3px; border: 1px solid #cac8c8; ;"
+                placeholder="댓글은 신중하게..!"></textarea>
+            </div>
+            <div style="margin: 10px; padding-top: 60px; ">
+              <button type="button" id="commentSave" onclick="commentWrite()" class="btn"
+                style="margin: auto; display: block; resize: none;">완료</button>
+            </div>
+          </div>
+          <br><br />
+        </div>
+      </div>
+    </body>
+  </div>
+
+  <script type="text/javascript">
+    let login = sessionStorage.getItem('login')
+    let likeFlag = false
+
+    $(document).ready(function () {
+
+      $("headers").load("../common/header.html");
+      $("navs").load("../common/nav.html");
+
+      if (login == undefined) {
+        $("#likes").attr("disabled", 1);
+
+      } else {
+        $("#writer").val(login);
+
+        $.ajax({
+          url: mainServer + "/isLikedFlag",
+          type: "GET",
+          data: {
+            seq: urlParams.get("seq"),
+            writer: login
+          }, success: function (flag) {
+            if (flag == true) {
+              $("#likes").addClass("likeButtonOn")
+              likeFlag = false
+            } else {
+              $("#likes").addClass("likeButtonOff")
+              likeFlag = true
+            }
+          },
+          error(err) {
+            alert(err)
+          }
+        })
+
+      }
+
+    });
+
+    const url = new URL(location.href);
+    const urlParams = url.searchParams;
+    let seq = urlParams.get("seq");
+
+    commentList();
+
+    function getLikes() {
+      $.ajax({
+        url: mainServer + "/getLikes",
+        type: "get",
+        data: { seq: seq },
+        success: function (count) {
+          $("#likes").text("❤ " + count);
+        },
+        error: function () {
+          alert('error')
+        }
+      })
+    }
+    // 내용 데이터값 가져옴
+    $.ajax({
+      url: mainServer + "/post",
+      type: "get",
+      data: { "seq": seq },
+      success: function (bbs) {
+        $("#id").text(bbs.writer);
+        $("#title").text(bbs.title);
+        $("#content").text(bbs.content);
+        $("#wdate").text(bbs.created);
+
+        if (bbs.writer != login) {
+          $("#bbsupdate").hide();
+          $("#bbsdelete").hide();
+        }
+
+        getLikes()
+
+      },
+      error: function () {
+      }
+    });
+
+    $("#bbsupdate").click(function () {
+      location.href = "bbsupdate.html?seq=" + seq;
+    });
+
+    $("#bbsdelete").click(function () {
+      $.ajax({
+        url: mainServer + "/deletePost",
+        type: "get",
+        data: { "seq": seq },
+        success: function (msg) {
+          if (msg == 1) {
+            alert("삭제되었습니다");
+            location.href = "bbslist.html";
+          } else {
+            alert("삭제되지 않았습니다");
+          }
+        },
+        error: function () {
+          alert('error');
+        }
+      })
+    });
+
+    $("#commentBtn").click(function () {
+      commentWrite();
+    });
+
+    // 댓글 작성 
+    function commentWrite() {
+
+      var checkbox = $("#secret_reply").is(":checked") ? 1 : 0
+
+      let login = sessionStorage.getItem("login");
+      $("#writer").val(login);
+
+      let commentContent = $("#commentContent").val()
+      if (commentContent.trim() == "") {
+        alert("코멘트를 작성해 주세요");
+        return;
+      }
+      if (login == undefined || login == "") {
+        alert("로그인하세요");
+        return;
+      }
+
+      $.ajax({
+        url: mainServer + "/writeComment",
+        type: "get",
+        data: { refPost: seq, writer: login, content: commentContent, hidden: checkbox },
+        success: function (msg) {
+          commentList();
+          $("#commentContent").val("");
+        },
+        error: function () {
+          alert('error');
+        }
+      })
+    }
+
+    function commentList() {
+      $.ajax({
+        url: mainServer + "/loadComments",
+        type: "get",
+        data: { sort: "new", refPost: seq },
+        success: function (list) {
+
+          $("#commentDiv").html("");
+
+          $.each(list, function (i, item) {
+
+            if (item.hidden != 1) {
+              let str = "<div style='display: flex;'>"
+              str += "<div class='repl_id'>" + item.writer + "</div>"
+              str += "<div class='repl_content'>" + item.content + "</div>"
+              str += "<div class='repl_date'>" + item.created + "</div>"
+              str += ''
+              str += "</div>"
+              $("#commentDiv").append(str);
+            }
+          });
+        },
+        error: function () {
+          alert('error');
+        }
+      })
+    }
+
+    // 좋아요     
+    if (login == undefined) {
+    } else {
+      $("#likes").on("click", function () {
+        $.ajax({
+          type: "GET",
+          url: mainServer + "/updateLike",
+          dataType: "json",
+          data: { seq: seq, writer: login, flag: likeFlag },
+          error: function (err) {
+            alert("error " + seq + " / " + likeFlag);
+          },
+          success: function (likeCheck) {
+            if (likeFlag == true) {
+              $("#likes").removeClass("likeButtonOff")
+              $("#likes").addClass("likeButtonOn")
+              likeFlag = false
+            }
+            else {
+              $("#likes").removeClass("likeButtonOn")
+              $("#likes").addClass("likeButtonOff")
+              likeFlag = true
+            }
+            getLikes()
+          }
+        });
+
+      });
+    }
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="/resources/js/script.js"></script>
+  <link rel="stylesheet" type="text/css" href="../../resources/css/style.css">
+  <link rel="stylesheet" type="text/css" href="../../resources/css/style-mypage.css">
+  <script type="text/javascript" src="./jquery/jquery.twbsPagination.min.js">
+  </script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $("headers").load("/screens/common/header.html");
+      $("navs").load("/screens/common/nav.html");
+    });
+  </script>
+  <title>회원정보</title>
+  <style>
+
+  </style>
+</head>
+
+<body>
+  <div>
+    <headers></headers>
+    <navs></navs>
+    <div id="container">
+      <div id="nav">
+
+        <div class="profile_image_wrapper">
+          <img src="kim.png" alt="Image">
+        </div>
+        <div class="profile">
+          <div class="read-username"></div>
+          <div class="read-email"></div>
+          <div class="read-intro" style="margin-bottom: 30px;"></div>
+        </div>
+
+        <div class="menus" id="menus-id">
+          <a href="/screens/auth/update.html">정보수정</a>
+          <a href="/screens/auth/mybbs.html">작성한 글</a>
+          <a href="/screens/auth/mycomment.html">작성한 댓글</a>
+          <a href="/screens/auth/delete.html">회원 탈퇴</a>
+        </div>
+      </div>
+      <div id="content">
+        <div class="title">내 프로필</div>
+        <div class="input_container">
+          <div class="input_wrapper">
+            <img src="assets/id.png" />
+            <input id="input-id" type="text" readonly="readonly">
+          </div>
+          <!-- <input id="read-nickname" type="text" readonly="readonly"><br> -->
+          <div class="input_wrapper">
+            <img src="assets/user.png" />
+            <input id="input-username" type="text" readonly="readonly">
+          </div>
+          <div class="input_wrapper">
+            <img src="assets/email.png" />
+            <input id="input-email" type="text" readonly="readonly">
+          </div>
+          <div class="input_wrapper">
+            <input id="input-intro" type="text" readonly="readonly">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // 회원정보 받아오기
+    const data = {
+      token: sessionStorage.getItem('token')
+    }
+
+    $.ajax({
+      type: 'post',
+      url: mainServer + '/userInfo',
+      data: data,
+      success: res => {
+        console.log(res)
+
+        const data = JSON.parse(res);
+        const user = JSON.parse(data.data)
+
+        $('.read-id').text(user.id)
+        $('.read-username').text(user.username)
+        $('.read-email').text(user.email)
+        $('.read-intro').text(user.intro)
+        $('#input-id').val(user.id)
+        $('#input-username').val(user.username)
+        $('#input-email').val(user.email)
+        $('#input-intro').val(user.intro)
+      },
+      error: err => {
+        console.log(`error: ${err.status}`)
+      }
+    })
+
+    if (sessionStorage.getItem('login') == 'admin') {
+
+      $('#menus-id').append(`<a href="/screens/auth/manager.html">관리자</a>`)
+    }
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+<nav>
+  <ul>
+    <li>|</li>
+    <li id="list-home">홈</li>
+    <li>|</li>
+    <li id="list-search">전적 검색</li>
+    <li>|</li>
+    <li id="list-board">자유게시판</li>
+    <li>|</li>
+  </ul>
+</nav>
+<script>
+
+  if (location.pathname == '/screens/main.html') {
+    $('#list-home').attr({ class: 'clicked' })
+  } else if (location.pathname.substr(0, 16) == '/screens/search/') {
+    // 나중에 수정
+  } else if (location.pathname.substr(0, 13) == '/screens/bbs/') {
+    // 이런 느낌
+  }
+
+  $('#list-home').click(() => {
+    location.href = '/screens/main.html'
+  })
+  $('#list-search').click(() => {
+    location.href = '/screens/api/summoner.html?name=hide on bush'
+  })
+  $('#list-board').click(() => {
+    location.href = '/screens/bbs/bbslist.html'
+  })
+</script>

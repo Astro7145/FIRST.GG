@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.camp.mul.back.dao.CommentDao">
+    <select id="loadComments" parameterType="map" resultType="com.camp.mul.back.dto.CommentDto">
+        SELECT * FROM COMMENT
+        WHERE DELETED = 0
+        AND REFPOST = #{refPost}
+        <choose>
+            <when test='sort.equals("new")'>
+                ORDER BY CREATED DESC
+            </when>
+            <when test='sort.equals("old")'>
+                ORDER BY CREATED ASC
+            </when>
+            <when test='sort.equals("like")'>
+                ORDER BY LIKES DESC
+            </when>
+        </choose>
+    </select>
+    
+    <update id="likeComment" parameterType="Integer">
+        UPDATE COMMENT
+        SET likes = likes + 1
+        WHERE seq = #{seq}
+    </update>
+
+    <insert id="writeComment" parameterType="com.camp.mul.back.dto.CommentDto">
+        INSERT INTO COMMENT(REFPOST, WRITER, CONTENT, HIDDEN)
+        VALUES(#{refPost}, #{writer}, #{content}, #{hidden})
+    </insert>
+
+    <update id="updateComment" parameterType="com.camp.mul.back.dto.CommentDto">
+        UPDATE COMMENT
+        SET CONTENT = #{content}
+        WHERE SEQ = #{seq}
+    </update>
+
+    <update id="deleteComment" parameterType="Integer">
+        UPDATE COMMENT
+        SET DELETED = 1
+        WHERE SEQ = #{seq}
+    </update>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.camp.mul.back.dao.UserPostDao">
+
+    <select id="getPostsById" resultType="com.camp.mul.back.dto.PostDto">
+        SELECT * FROM POST WHERE writer=#{id} AND deleted = 0;
+    </select>
+
+    <select id="getCommentsById" resultType="com.camp.mul.back.dto.CommentDto">
+        SELECT * FROM COMMENT WHERE writer=#{id} AND deleted = 0;
+    </select>
+
+    <select id="getRecentPostsAndCmtCntOrderByLike" resultType="com.camp.mul.back.dto.PostDto">
+        SELECT a.SEQ, a.TITLE, a.WRITER, a.CREATED, a.LIKES, IFNULL(b.CNT, 0) AS COMMENTS
+        FROM 
+            (
+                SELECT a.SEQ, a.TITLE, a.WRITER, a.CREATED, IFNULL(b.CNT, 0) AS LIKES
+                FROM 
+                    (SELECT *
+                    FROM POST 
+                    WHERE created BETWEEN DATE_ADD(NOW(), INTERVAL -1 WEEK) AND NOW()) a
+                    
+                    LEFT OUTER JOIN
+                    
+                    (SELECT P_SEQ AS SEQ, COUNT(*) AS CNT FROM LIKES GROUP BY P_SEQ) b
+                    
+                ON a.SEQ = b.SEQ
+            ) a
+        
+            LEFT OUTER JOIN
+            
+            (
+                SELECT REFPOST AS SEQ, COUNT(*) AS CNT FROM COMMENT GROUP BY REFPOST
+            ) b
+            
+        ON a.SEQ = b.SEQ
+        
+        ORDER BY a.LIKES DESC, a.SEQ ASC
+        
+        LIMIT 10;
+    </select>
+</mapper>

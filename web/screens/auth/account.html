@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="/resources/js/script.js"></script>
+  <link rel="stylesheet" type="text/css" href="/resources/css/style.css">
+  <script type="text/javascript" src="./jquery/jquery.twbsPagination.min.js">
+  </script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $("headers").load("/screens/common/header.html");
+      $("navs").load("/screens/common/nav.html");
+    });
+  </script>
+  <title>회원가입</title>
+</head>
+
+<body>
+  <headers></headers>
+  <navs></navs>
+  <div id="box-regi">
+    <form>
+      <div>
+        <label for="input-id">
+          <input id="input-id" type="text" placeholder="아이디를 입력해주세요" required="required">
+          <input id="idCheckBtn" type="button" value="중복확인">
+        </label>
+      </div>
+
+      <div>
+        <label for="input-pw">
+          <input id="input-pw" type="password" placeholder="비밀번호를 입력해주세요" required="required">
+        </label>
+      </div>
+
+      <div>
+        <label for="input-username">
+          <input id="input-username" type="text" placeholder="이름을 입력해주세요" required="required">
+        </label>
+      </div>
+
+      <!-- <div>
+                <label for="input-nickName">
+                    <input id="input-nickname" type="text" placeholder="닉네임을 입력해주세요" required="required">
+                </label>
+            </div> -->
+
+      <div>
+        <label for="input-email">
+          <input id="input-email" type="email" placeholder="이메일을 입력해주세요" required="required">
+        </label>
+      </div>
+
+      <div>
+        <label for="input-intro">
+          <textarea id="input-intro" cols="50" rows="10" placeholder="자기소개를 작성해주세요"></textarea>
+        </label>
+      </div>
+    </form>
+
+    <button id="btn-regi" onclick="regi()">작성 완료</button>
+  </div>
+  <script>
+
+    // 아이디 중복확인
+    const idCheck = () => {
+
+      const userId = $('#input-id').val()
+
+      $.ajax({
+        type: 'post',
+        url: mainServer + '/checkDup',
+        data: { id: userId },
+        success: result => {
+
+          const data = JSON.parse(result);
+          // alert(data.result)
+
+          if (data.result == "success") {
+            alert("사용 가능한 아이디 입니다")
+          } else {
+            alert("사용 중인 아이디 입니다")
+          }
+        },
+        error: err => {
+          console.log(`error: ${err.status}`)
+        }
+      })
+    }
+
+    $('#idCheckBtn').click(idCheck);
+
+    // 회원가입
+    const regi = () => {
+
+      const id = $('#input-id').val()
+      const pw = $('#input-pw').val()
+      const username = $('#input-username').val()
+      // const nickname = $('#input-nickName').val()
+      const email = $('#input-email').val()
+      const intro = $('#input-intro').val()
+
+      const data = {
+        id: id,
+        pw: pw,
+        username: username,
+        // nickName: nickname,
+        email: email,
+        intro: intro
+      }
+
+      if (id === "") {
+        alert("아이디가 입력되지 않았습니다")
+      } else if (pw === "") {
+        alert("비밀번호가 입력되지 않았습니다")
+      } else if (username === "") {
+        alert("이름이 입력되지 않았습니다")
+        // }else if(nickname === ""){
+        //     alert("닉네임이 입력되지 않았습니다")
+      } else if (email === "") {
+        alert("이메일이 입력되지 않았습니다")
+      } else {
+        $.ajax({
+          type: 'post',
+          url: mainServer + '/register',
+          data: data,
+          success: res => {
+
+            const data = JSON.parse(res);
+
+            if (data.result == "success") {
+              alert("회원가입이 완료되었습니다")
+              window.location.href = "/web/screens/auth/login.html"
+            } else {
+              alert("입력된 정보를 확인하세요")
+            }
+          },
+          error: err => {
+            console.log(`error: ${err.status}`)
+          }
+        })
+      }
+
+    }
+
+    $('#btn-regi').click(regi);
+
+  </script>
+</body>
+
+</html>

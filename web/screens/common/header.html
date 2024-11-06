@@ -1,0 +1,65 @@
+<script src="/resources/js/script.js"></script>
+
+<header>
+  <div id="title-box" class="flex-vertical-center">
+    <h1>FIRST.GG</h1>
+  </div>
+  <div id="search-box" class="flex-vertical-center">
+    <input id="input-search" type="search" placeholder="소환사명 검색" />
+    <button id="btn-search" class="basic-btn">검색</button>
+  </div>
+  <div id="login-box" class="flex-vertical-center">
+    <button id="btn-mypage" class="basic-btn">마이페이지</button>
+    <button id="btn-login" class="basic-btn">로그인</button>
+  </div>
+</header>
+
+<script>
+  // 로그인 여부 확인 (header에서 처리해도 되지 않을까?)
+  const token = sessionStorage.getItem('token')
+
+  if (token != undefined && token != null) {
+
+    $.ajax({
+      url: mainServer + '/checkToken',
+      type: 'post',
+      data: { token: token },
+      success: res => {
+        const data = JSON.parse(res);
+        if (data.result == 'success') {
+          $('#btn-mypage').css('display', 'inline-block')
+          $('#btn-login').text('로그아웃')
+        } else {
+          sessionStorage.clear()
+          window.location.reload()
+        }
+      }
+    })
+  }
+
+  // 헤더 부분
+  $('#title-box h1').click(() => {
+    window.location.href = '/screens/main.html'
+  })
+  $('#btn-search').click(() => {
+    const name = $('#input-search').val()
+    window.location.href = `/screens/api/summoner.html?name=${name}`
+  })
+  $('#btn-mypage').click(() => {
+    window.location.href = '/screens/auth/mypage.html'
+  })
+  $('#btn-login').click(() => {
+    if (token == undefined || token == null) {
+      window.location.href = '/screens/auth/login.html'
+    } else {
+      sessionStorage.clear()
+      window.location.reload()
+    }
+  })
+  $('#input-search').keypress(() => {
+    if (event.keyCode == 13) {
+      const name = $('#input-search').val()
+      window.location.href = `/screens/api/summoner.html?name=${name}`
+    }
+  })
+</script>

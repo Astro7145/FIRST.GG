@@ -1,0 +1,23 @@
+
+/* 레이아웃 */
+main { height: 100vh; display: flex; justify-content: center; align-items: center; }
+#login-box { display: flex; flex-direction: column; width: 500px; }
+#title-box { display: flex; height: 100px; justify-content: center; align-items: center; }
+#content-box { display: flex; padding: 30px 50px;flex-direction: column;}
+#register-box { text-align: right;}
+#input-id, #input-pw { height: 40px; padding: 5px 10px; margin: 10px 0px; }
+#btn-login { height: 60px; font-size: 20px; padding: 10px 20px; margin: 25px 0px 10px 0px; }
+
+/* 스타일 */
+h1 { color: #f1c40f; font-size: 50px;}
+#login-box { background-color: #fff; border-radius: 5px; box-shadow: 0px 0px 20px 1px #a0a0a0;}
+#title-box { background-color: #153769; border-radius: 5px 5px 0 0;}
+#input-id, #input-pw { border: 2px solid #fff; border-bottom: 2px solid #e0e0e0; font-size: 20px; }
+#input-id:focus, #input-pw:focus { outline: none; border-bottom: 2px solid #f1c40f;}
+#btn-login { background-color: #f1c40f; border: none; border-radius: 5px; font-size: 20px; }
+#btn-login:hover { cursor: pointer;}
+#register-box {color: #7a7a7a; }
+#link-register:hover {cursor: pointer;}
+
+#warning-box { color: #dd5555; text-align: left; padding: 10px 10px; }
+.warning-input { border-bottom: 2px solid #dd5555 !important;}

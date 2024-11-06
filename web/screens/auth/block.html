@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="/resources/js/script.js"></script>
+  <link rel="stylesheet" type="text/css" href="/resources/css/style.css">
+  <script type="text/javascript" src="./jquery/jquery.twbsPagination.min.js">
+  </script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $("headers").load("/screens/common/header.html");
+      $("navs").load("/screens/common/nav.html");
+    });
+  </script>
+  <title>차단목록</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    #container {
+      display: flex;
+      height: 80vh;
+      width: max-content;
+      margin: 0 auto;
+      align-items: center;
+    }
+
+    #nav {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      width: 300px;
+      padding: 40px;
+      background-color: #FFFFFF;
+      margin-top: 50px;
+    }
+
+    #nav>div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #nav>.menus>* {
+      margin: 15px 0;
+    }
+
+    #nav a {
+      color: #000;
+      text-decoration: none;
+      font-size: 20px;
+    }
+
+    #nav a.selected {
+      color: #f1c40f;
+    }
+
+    #content {
+      display: flex;
+      flex-direction: column;
+      height: 80%;
+      width: 500px;
+      margin: 0 10%;
+      overflow: hidden;
+    }
+
+    #content .member {
+      position: relative;
+      margin-top: 20px;
+    }
+
+    #content .member img {
+      /* position: absolute; */
+      left: 10px;
+      top: calc(50% - 12.5px);
+      height: 45px;
+      width: 45px;
+    }
+
+    #content .member div {
+      /* position: absolute; */
+      height: 25px;
+      left: 50px;
+      width: 200px;
+      padding-left: 20px;
+      text-align: left;
+    }
+
+    #content .member button {
+      /* position: absolute; */
+      right: 10px;
+      top: calc(50% - 2px);
+      height: 30px;
+      padding: 0 12px;
+      border: none;
+      background-color: #f1c40f;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #content .member tbody {
+      height: 300px;
+      margin: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <headers></headers>
+  <navs></navs>
+  <div id="container">
+    <div id="nav">
+      <div class="menus">
+        <a href="/screens/auth/manager.html">회원목록</a>
+        <a class="selected" href="/screens/auth/block.html">차단목록</a>
+        <!-- <a href="/screens/auth/Report.html">신고목록</a><br> -->
+      </div>
+    </div>
+    <hr>
+    <div id="content">
+      <h3>차단리스트</h3><br>
+      <div class="member">
+        <table>
+          <tbody id="tbody">
+
+          </tbody>
+          <!-- <tr>
+                       
+                        <th>
+                            <img src="kim.png" alt="Image">
+                        </th>
+                        <th>
+                            <div id="read-id">홍길동</div>
+                        </th>
+                        <th>
+                            <button id="block" onclick="blockBtn()" style="right: 70px;">차단</button>
+                        </th>
+                        <th>
+                            <button id="delete" onclick="deleteBtn()">삭제</button>
+                        </th>
+                    </tr> -->
+        </table>
+      </div>
+    </div>
+  </div>
+  <script>
+
+    // 회원 정보
+    const data = {
+      token: sessionStorage.getItem('token')
+    }
+
+    $.ajax({
+      type: 'post',
+      url: mainServer + '/userInfo',
+      data: data,
+      success: res => {
+        console.log(res)
+
+        const data = JSON.parse(res);
+        const user = JSON.parse(data.data)
+
+        $('#read-id').val(user.id)
+        $('#read-nickname').val(user.nickname)
+        $('#read-username').val(user.username)
+        $('#read-email').val(user.email)
+        $('#read-intro').val(user.intro)
+      },
+      error: err => {
+        console.log(`error: ${err.status}`)
+      }
+    })
+
+    // 차단해제 버튼
+    function nBlockBtn(myseq) {
+
+      const data = {
+        token: sessionStorage.getItem('token'),
+        seq: myseq,
+        auth: 3
+      }
+
+      $.ajax({
+        type: 'post',
+        url: mainServer + '/modAuth',
+        data: data,
+        success: res => {
+          const data = JSON.parse(res)
+          if (data.result == "success") {
+            alert('선택한 회원의 정보가 차단 해제 되었습니다')
+            location.reload()
+          } else {
+            alert('회원 정보가 일치하지 않습니다')
+          }
+        },
+        error: err => {
+          console.log(`error: ${err.status}`)
+        }
+      })
+    }
+
+    // 삭제 버튼
+    const deleteBtn = () => {
+
+      const idDelete = $('delete')
+      const data = { idDelete: idDelete }
+
+      $.ajax({
+        url: "http://175.116.94.172:3000/deleteUser",
+        type: "post",
+        data: data,
+        success: res => {
+          console.log(res)
+          const data = JSON.parse(res)
+          if (data.result == "success") {
+            alert('선택한 회원의 정보가 삭제 되었습니다')
+          } else {
+            alert('회원 정보가 일치하지 않습니다')
+          }
+        },
+        error: err => {
+          console.log(`error: ${err.status}`)
+        }
+      })
+
+    }
+    $('#delete').click(deleteBtn);
+
+    // 회원 정보 리스트
+    $("#tbody").html("");
+    $.ajax({
+      url: "http://175.116.94.172:3000/blockedUserList",
+      type: "post",
+      data: data,
+      success: function (list) {
+        console.log("!!!!!!!!!!!!!!");
+        console.log(list)
+
+        const data = JSON.parse(list)
+        console.log("!!!!!!!!!!!!!!" + data);
+        const dataList = JSON.parse(data.data)
+        console.log("!!!!!!!!!!!!!!" + dataList[0].seq);
+        $.each(dataList, function (i, item) {
+          console.log(item)
+
+          let str = "<tr>" +
+            "<th>" +
+            "<img src='kim.png'>" +
+            "</th>" +
+            "<th>" +
+            "<div id='read-id'>" + item.username + "</div>" +
+            "</th>" +
+            "<th>" +
+            "<button id='block' onclick='nBlockBtn(" + item.seq + ")' style='right: 70px;'>차단해제</button>" +
+            "</th>" +
+            "<th>" +
+            "<button id='delete' onclick='deleteBtn(" + item.seq + ")'>삭제</button>"
+          "</th>" +
+            "</tr>"
+
+          console.log("$$$$$$$" + str)
+
+          $("tbody").append(str);
+
+        });
+      },
+      error: function () {
+        alert('err')
+      }
+    })
+
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="/resources/js/script.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" href="../../resources/css/style.css">
+  <link rel="stylesheet" type="text/css" href="../../resources/css/style-bbs.css">
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+
+      $("headers").load("../common/header.html");
+      $("navs").load("../common/nav.html");
+    });
+  </script>
+
+  <title>First.GG_Bbswrite</title>
+</head>
+
+<body>
+  <headers></headers>
+  <navs></navs>
+  <div class="content1">
+    <form id="wrtieArtical">
+      <h1>게시글 작성</h1>
+      <hr style="margin-top: 20px; margin-bottom: 15px;">
+      <div>
+        <input type="text" id="title" name="title" size="50px" placeholder="제목을 입력해주세요" class="pp">
+        <br />
+        <a style="margin-left: 3px; font-size: 16px;">작성자 : </a><input type="text" id="writer" name="writer" size="30px"
+          readonly="readonly" class="pp" style="border:0 solid black">
+        <hr>
+        <textarea rows="15" cols="93" id="content" name="content"
+          style="resize: vertical;  border: lightgray; overflow-y:scroll; font-size: 15px;" placeholder="내용 입력해주세요"
+          class="textBox"></textarea>
+      </div>
+      <br>
+      <hr><br />
+    </form>
+    <div id="wrapper" class="wrapper">
+      <button type="button" id="save_btn" class="btn">작성완료</button>
+      <button type="button" onclick='window.location.href="bbslist.html" ' class="btn">취소</button>
+    </div>
+</body>
+</div>
+
+<script type="text/javascript">
+  let login = sessionStorage.getItem("login");
+
+  $("#writer").val(login);
+  $("#save_btn").click(function () {
+
+    $.ajax({
+      url: mainServer + "/writePost",
+      type: "get",
+      data: {
+        title: $("#title").val(),
+        writer: $("#writer").val(),
+        content: $("#content").val()
+      },
+      success: function (msg) {
+        if (msg == 1) {
+          alert('추가되었습니다');
+          location.href = "bbslist.html";
+        } else {
+          alert('추가되지 않았습니다');
+        }
+      },
+      error: function (err) {
+
+      }
+    })
+  });
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,40 @@
+게임 종류 info.gameMode
+플레이 날짜 info.gameCreation
+팀 승패 info.teams.win
+팀 ID info.teams.teamId
+게임 시간 info.gameDuration
+
+킬 info.participants.kills
+데스 info.participants.deaths
+어시스트 info.participants.assists
+KDA info.participants.challenges.kda
+레벨 info.participants.champLevel
+미니언 info.participants.totalMinionsKilled
+아이템 info.participants.item0~6
+제어 와드 info.participants.detectorWardsPlaced
+팀 인원 info.participants.summonerName
+팀 인원 프로필 아이콘 info.participants.profileIcon
+팀 인원 챔피언 info.participants.championName
+팀 인원 챔피언 ID info.paticipants.championId
+팀 인원 승패 info.participants.win
+
+룬 info.participants.perks
+
+룬 종류 info.participants.perks.styles[0].style 주 룬
+          info.participants.perks.styles[1].style 보조 룬
+
+8000 = 정밀
+8100 = 지배
+8200 = 마법
+8300 = 영감
+8400 = 결의
+
+주 룬 1 info.participants.perks.styles[0].selections[0].perk // styles[0] = 주 룬, styles[1] = 보조 룬, selection[0~3] = 룬 1 ~ 4
+주 룬 2 info.participants.perks.styles[0].selections[1].perk 
+주 룬 3 info.participants.perks.styles[0].selections[2].perk 
+주 룬 4 info.participants.perks.styles[0].selections[3].perk 
+
+보조 룬 1 info.participants. perks.styles[1].selections[0].perk 
+보조 룬 2 info.participants. perks.styles[1].selections[2].perk 
+
+github token = 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

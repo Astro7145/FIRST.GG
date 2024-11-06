@@ -1,0 +1,44 @@
+/*  폰트 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+body { font-family: 'Noto Sans', sans-serif; background-color: #e0e0e0; }
+body, h1, h2, h3 { margin: 0; padding: 0; }
+
+.flex-vertical-center { display: flex; align-items: center; }
+
+/*헤더*/
+/* 레이아웃 */
+header { display: flex; align-items: center; height: 70px; padding: 0px 20px; justify-content: space-between;}
+header #title-box { width: 200px; height: 100%; }
+header #search-box { flex-grow: 1; max-width: 600px; height: 40px; margin: 20px 100px; padding: 0px 10px;}
+header #login-box { width: 200px; height: 100%; justify-content: right; }        
+
+/* 스타일 */
+header { background-color: #153769; }
+header h1 { color: #f1c40f; }        
+header h1:hover { cursor: pointer; }
+header button { background-color: #f1c40f; border-radius: 5px; border: 0px; font-weight: 700; }
+header button:hover { background-color: #f39c12; cursor: pointer; }
+header #search-box { background-color: #ffffff; border-radius: 5px; }
+header #input-search { flex-grow: 1; height: 25px; border: 0px; border-radius: 5px; }
+header #btn-search {width: 60px; height: 30px; margin-left: 10px;}
+header #btn-mypage {width: 90px; height: 30px; margin: 0px 10px; display: none; }
+header #btn-login {width: 70px; height: 30px;}
+
+
+/*네비*/
+/* 레이아웃 */
+nav { display: flex; align-items: center; height: 50px; padding: 0px 20px; }
+
+/* 스타일 */
+nav { background-color: #1c4b8f;}
+nav ul { list-style-type: none; margin: 0; padding: 0;}
+nav li { float: left; margin-right: 20px; color: #f1c40f; font-weight: 700;}
+nav li:nth-child(even):hover { color: #f39c12; cursor: pointer; }
+nav .clicked { color: #f39c12; }
+
+/*발바닥*/
+/* 레이아웃 */
+footer { display: flex; height: 70px; padding: 10px 20px; align-items: center;}
+#footer-copyright { flex: 1 }
+/* 스타일*/
+footer { border: 1px solid #111; background-color: #153769; color: #e0e0e0;}

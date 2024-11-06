@@ -1,0 +1,194 @@
+img
+{
+    vertical-align: bottom;
+}
+
+/* 전적 불러오는 화면 전용 CSS */
+
+.grey-border-top
+{
+    border-top: 0.1em solid grey;
+}
+.grey-border-bottom
+{
+    border-bottom: 0.1em solid grey;
+}
+.grey-border-left
+{
+    border-left: 0.1em solid grey;
+}
+.grey-border-right
+{
+    border-right: 0.1em solid grey;
+}
+
+.grey-border
+{
+    border: 0.1em solid grey;
+}
+
+.div-border-round
+{
+    border-radius: 0.2em;
+}
+
+.div-module
+{
+    border: 0.1em solid grey;
+    border-radius: 0.2em;
+    background-color: rgb(236, 236, 236);
+    margin: 0.5em;
+    padding: 0.5em;
+}
+
+.champ-mastery-fragment
+{
+    padding: 0.2em 0.2em;
+    flex: 1; 
+    display: flex;
+}
+
+.champ-mastery-fragment-img
+{
+    height: 5em; 
+    border-radius: 10%;
+}
+
+.champ-mastery-fragment-div1
+{
+    padding-left: 0.5em;
+}
+
+.champ-mastery-fragment-div2
+{
+    padding: 0.1em;
+}
+
+.champ-mastery-fragment-div3
+{
+    padding: 0.1em;
+    color: #616161; 
+    font-size: 0.9em;
+}
+
+.champ-mastery-fragment-div4
+{
+    padding: 0.1em; 
+    color: #616161; 
+    font-size: 0.9em;
+}
+
+champ-mastery-fragment-span1
+{
+    color: black; 
+    font-weight: bold;
+}
+
+champ-mastery-fragment-span2
+{
+    color: black; 
+    font-weight: bold;
+}
+
+.summoner-mastery-champName
+{
+    font-size: 1.5em;
+}
+
+.one-game-module
+{
+    display: flex;
+    height: 8em;
+    background-color: grey;
+    border-radius: 0.2em;
+    color: rgb(71, 71, 71);
+    margin-bottom: 0.5em;
+}
+
+.win
+{
+    background-color:rgb(150, 200, 255);
+}
+
+.lose
+{
+    background-color:rgb(255, 180, 175);
+}
+
+.one-game-img
+{
+    height: 6em;
+    border-radius: 100%;
+}
+
+.one-game-fragment
+{
+    display: flex;
+    margin: 0.5em 0; 
+    padding: 0 0.7em;
+    justify-content: center;
+    align-items: center;
+}
+
+.one-game-perk
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.1em;
+}
+
+.perk-img-size
+{
+    height: 2em;
+    border-radius: 100%;
+}
+
+.perk-primary
+{
+    background-color: black;
+}
+
+.one-game-ul
+{
+    list-style: none;
+    padding-left: 0;
+}
+
+.one-game-ul-align-right
+{
+    text-align: right;
+}
+
+.team-summoner-icon
+{
+    height: 1.2rem; 
+    border-radius: 100%;
+}
+
+.team-summoner
+{
+    font-size: 0.8em;
+}
+
+.team-center-between
+{
+    flex: 1;
+    justify-content: space-between;
+}
+
+.module-legend
+{
+    font-weight: bold;
+    font-size: 1.8em;
+    text-shadow: -2px 0 0px #1c4b8f, 0 2px #1c4b8f, 2px 0 #1c4b8f, 0 -2px #1c4b8f;
+    color: #f1c40f;
+}
+
+.background-img
+{
+    background-image: url(../../resources/img/loading.gif);
+    background-size: 3em;
+    background-repeat: no-repeat;
+    background-position: center;
+}
